@@ -4,6 +4,7 @@ const rootRouter = express.Router();
 const userRouter = require('./user.router');
 const movieRouter = require('./movie.router');
 const cinemaRouter = require('./cinema.router');
+const ticketRouter = require('./ticket.router');
 
 rootRouter.get('/', (req, res) => {
     res.json({
@@ -16,5 +17,6 @@ rootRouter.get('/', (req, res) => {
 rootRouter.use('/QuanLyNguoiDung', userRouter);
 rootRouter.use('/QuanLyPhim', movieRouter);
 rootRouter.use('/QuanLyRap', cinemaRouter);
+rootRouter.use('/QuanLyDatVe', ticketRouter);
 
 module.exports = rootRouter;

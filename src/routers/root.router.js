@@ -2,6 +2,7 @@ const express = require('express');
 const rootRouter = express.Router();
 
 const userRouter = require('./user.router');
+const movieRouter = require('./movie.router');
 
 rootRouter.get('/', (req, res) => {
     res.json({
@@ -12,5 +13,6 @@ rootRouter.get('/', (req, res) => {
 });
 
 rootRouter.use('/QuanLyNguoiDung', userRouter);
+rootRouter.use('/QuanLyPhim', movieRouter);
 
 module.exports = rootRouter;

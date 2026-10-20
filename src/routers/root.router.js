@@ -1,7 +1,8 @@
 const express = require('express');
 const rootRouter = express.Router();
 
-// Health check endpoint
+const userRouter = require('./user.router');
+
 rootRouter.get('/', (req, res) => {
     res.json({
         message: '🎬 Welcome to Cybersoft Movie Booking API Clone!',
@@ -10,10 +11,6 @@ rootRouter.get('/', (req, res) => {
     });
 });
 
-// Các phân hệ chính (sẽ gắn lần lượt theo tiến độ)
-// rootRouter.use('/QuanLyNguoiDung', authRouter);
-// rootRouter.use('/QuanLyPhim', movieRouter);
-// rootRouter.use('/QuanLyRap', cinemaRouter);
-// rootRouter.use('/QuanLyDatVe', ticketRouter);
+rootRouter.use('/QuanLyNguoiDung', userRouter);
 
 module.exports = rootRouter;

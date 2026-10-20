@@ -39,6 +39,59 @@ class UserController {
             next(error);
         }
     }
+
+    async layDanhSachLoaiNguoiDung(req, res, next) {
+        try {
+            const result = await userService.layDanhSachLoaiNguoiDung();
+            return sendResponse(res, 200, 'Lấy danh sách loại người dùng thành công!', result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async layDanhSachNguoiDungPhanTrang(req, res, next) {
+        try {
+            const result = await userService.layDanhSachNguoiDungPhanTrang(req.query);
+            return sendResponse(res, 200, 'Lấy danh sách người dùng phân trang thành công!', result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async themNguoiDung(req, res, next) {
+        try {
+            const result = await userService.themNguoiDung(req.body);
+            return sendResponse(res, 200, 'Thêm người dùng thành công!', result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async capNhatThongTinNguoiDung(req, res, next) {
+        try {
+            // req.user được middleware verifyAuth truyền vào
+            const result = await userService.capNhatThongTinNguoiDung(req.body, req.user);
+            return sendResponse(res, 200, 'Cập nhật thông tin thành công!', result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async xoaNguoiDung(req, res, next) {
+        try {
+            // Có thể lấy TaiKhoan từ query params hoặc body
+            const taiKhoan = req.query.TaiKhoan || req.body.taiKhoan;
+            if (!taiKhoan) {
+                const error = new Error('Vui lòng cung cấp tài khoản cần xóa!');
+                error.statusCode = 400;
+                throw error;
+            }
+            const result = await userService.xoaNguoiDung(taiKhoan);
+            return sendResponse(res, 200, result, null);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 module.exports = new UserController();

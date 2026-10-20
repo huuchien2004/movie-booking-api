@@ -29,7 +29,7 @@ const requireAdmin = (req, res, next) => {
     if (req.user && req.user.maLoaiNguoiDung === 'QuanTri') {
         return next();
     }
-    return sendResponse(res, 403, 'Yêu cầu quyền Quản trị viên (QuanTri) để thực hiện chức năng này!', null);
+    return sendResponse(res, 403, 'Tài khoản của bạn không có quyền để thực hiện chức năng này!', null);
 };
 
 module.exports = {

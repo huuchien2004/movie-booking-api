@@ -3,37 +3,25 @@ const bcrypt = require('bcryptjs');
 const { createAccessToken } = require('../helpers/token.helper');
 
 class UserService {
-    /**
-     * 1.ĐĂNG KÝ
-     * Luồng: Kiểm tra trùng tài khoản/email -> Băm mật khẩu (bcrypt) -> Lưu vào MySQL
-     */
+    // 1. Đăng ký
     async dangKy(data) {
         const { taiKhoan, matKhau, email, soDt, hoTen } = data;
 
-        // Bước 1.1: Kiểm tra xem tài khoản đã tồn tại chưa
-        const checkUser = await prisma.nguoiDung.findUnique({
-            where: { taiKhoan }
-        });
+        const checkUser = await prisma.nguoiDung.findUnique({ where: { taiKhoan } });
         if (checkUser) {
             const error = new Error('Tài khoản đã tồn tại!');
             error.statusCode = 400;
             throw error;
         }
 
-        // Bước 1.2: Kiểm tra xem email đã có ai dùng chưa
-        const checkEmail = await prisma.nguoiDung.findUnique({
-            where: { email }
-        });
+        const checkEmail = await prisma.nguoiDung.findUnique({ where: { email } });
         if (checkEmail) {
             const error = new Error('Email đã được sử dụng!');
             error.statusCode = 400;
             throw error;
         }
 
-        // Bước 1.3: Mã hóa mật khẩu một chiều bằng bcrypt (độ phức tạp 10)
         const hashPassword = await bcrypt.hash(matKhau, 10);
-
-        // Bước 1.4: Tạo người dùng mới trong Database
         const newUser = await prisma.nguoiDung.create({
             data: {
                 taiKhoan,
@@ -45,28 +33,21 @@ class UserService {
             }
         });
 
-        // Ẩn mật khẩu trước khi trả về cho client
         const { matKhau: _, ...userWithoutPass } = newUser;
         return userWithoutPass;
     }
 
-    /**
-     * 2. ĐĂNG NHẬP
-     */
+    // 2. Đăng nhập
     async dangNhap(data) {
         const { taiKhoan, matKhau } = data;
 
-        // Bước 2.1: Tìm người dùng theo tài khoản
-        const user = await prisma.nguoiDung.findUnique({
-            where: { taiKhoan }
-        });
+        const user = await prisma.nguoiDung.findUnique({ where: { taiKhoan } });
         if (!user) {
             const error = new Error('Tài khoản hoặc mật khẩu không đúng!');
             error.statusCode = 400;
             throw error;
         }
 
-        // Bước 2.2: So sánh mật khẩu người dùng gõ vào với mật khẩu đã băm trong DB
         const isMatch = await bcrypt.compare(matKhau, user.matKhau);
         if (!isMatch) {
             const error = new Error('Tài khoản hoặc mật khẩu không đúng!');
@@ -74,13 +55,11 @@ class UserService {
             throw error;
         }
 
-        // Bước 2.3: Tạo Access Token JWT chứa thông tin cần thiết
         const accessToken = createAccessToken({
             taiKhoan: user.taiKhoan,
             maLoaiNguoiDung: user.maLoaiNguoiDung
         });
 
-        // Trả về đúng format mà Swagger Cybersoft yêu cầu
         return {
             taiKhoan: user.taiKhoan,
             hoTen: user.hoTen,
@@ -91,20 +70,14 @@ class UserService {
         };
     }
 
-    /**
-     * 3. LẤY THÔNG TIN TÀI KHOẢN (PROFILE) KÈM LỊCH SỬ ĐẶT VÉ
-     */
+    // 3. Thông tin tài khoản (Profile)
     async thongTinTaiKhoan(taiKhoan) {
         const user = await prisma.nguoiDung.findUnique({
             where: { taiKhoan },
             include: {
                 DatVe: {
                     include: {
-                        LichChieu: {
-                            include: {
-                                Phim: true
-                            }
-                        },
+                        LichChieu: { include: { Phim: true } },
                         Ghe: true
                     }
                 }
@@ -121,9 +94,7 @@ class UserService {
         return userInfo;
     }
 
-    /**
-     * 4. LẤY DANH SÁCH NGƯỜI DÙNG (CÓ HỖ TRỢ TÌM KIẾM TỪ KHÓA)
-     */
+    // 4. Lấy danh sách người dùng
     async layDanhSachNguoiDung(tuKhoa) {
         const whereCondition = tuKhoa ? {
             OR: [
@@ -142,6 +113,146 @@ class UserService {
                 maLoaiNguoiDung: true
             }
         });
+    }
+
+    // 5. Lấy danh sách loại người dùng (KhachHang, QuanTri)
+    async layDanhSachLoaiNguoiDung() {
+        return await prisma.loaiNguoiDung.findMany();
+    }
+
+    // 6. Lấy danh sách người dùng phân trang
+    async layDanhSachNguoiDungPhanTrang(params) {
+        const soTrang = parseInt(params.soTrang) || 1;
+        const soPhanTuTrenTrang = parseInt(params.soPhanTuTrenTrang) || 10;
+        const tuKhoa = params.tuKhoa || '';
+
+        const whereCondition = tuKhoa ? {
+            OR: [
+                { taiKhoan: { contains: tuKhoa } },
+                { hoTen: { contains: tuKhoa } }
+            ]
+        } : {};
+
+        // Tính toán skip (bỏ qua bao nhiêu phần tử)
+        const skip = (soTrang - 1) * soPhanTuTrenTrang;
+
+        // Đếm tổng số bản ghi và lấy dữ liệu của trang hiện tại
+        const [totalCount, items] = await Promise.all([
+            prisma.nguoiDung.count({ where: whereCondition }),
+            prisma.nguoiDung.findMany({
+                where: whereCondition,
+                skip,
+                take: soPhanTuTrenTrang,
+                select: {
+                    taiKhoan: true,
+                    hoTen: true,
+                    email: true,
+                    soDt: true,
+                    maLoaiNguoiDung: true
+                }
+            })
+        ]);
+
+        const totalPages = Math.ceil(totalCount / soPhanTuTrenTrang);
+
+        return {
+            currentPage: soTrang,
+            count: items.length,
+            totalPages,
+            totalCount,
+            items
+        };
+    }
+
+    // 7. Thêm người dùng (Dành cho Quản trị viên)
+    async themNguoiDung(data) {
+        const { taiKhoan, matKhau, email, soDt, hoTen, maLoaiNguoiDung } = data;
+
+        const checkUser = await prisma.nguoiDung.findUnique({ where: { taiKhoan } });
+        if (checkUser) {
+            const error = new Error('Tài khoản đã tồn tại!');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        const checkEmail = await prisma.nguoiDung.findUnique({ where: { email } });
+        if (checkEmail) {
+            const error = new Error('Email đã được sử dụng!');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        const hashPassword = await bcrypt.hash(matKhau, 10);
+        const newUser = await prisma.nguoiDung.create({
+            data: {
+                taiKhoan,
+                matKhau: hashPassword,
+                email,
+                soDt,
+                hoTen,
+                maLoaiNguoiDung: maLoaiNguoiDung || 'KhachHang'
+            }
+        });
+
+        const { matKhau: _, ...result } = newUser;
+        return result;
+    }
+
+    // 8. Cập nhật thông tin người dùng
+    async capNhatThongTinNguoiDung(data, currentUser) {
+        const { taiKhoan, matKhau, email, soDt, hoTen, maLoaiNguoiDung } = data;
+
+        // Nếu không phải Admin thì chỉ được sửa thông tin của chính mình
+        if (currentUser.maLoaiNguoiDung !== 'QuanTri' && currentUser.taiKhoan !== taiKhoan) {
+            const error = new Error('Bạn không có quyền chỉnh sửa tài khoản của người khác!');
+            error.statusCode = 403;
+            throw error;
+        }
+
+        const user = await prisma.nguoiDung.findUnique({ where: { taiKhoan } });
+        if (!user) {
+            const error = new Error('Không tìm thấy tài khoản cần cập nhật!');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        // Chuẩn bị dữ liệu cập nhật
+        const updateData = {
+            email: email || user.email,
+            soDt: soDt || user.soDt,
+            hoTen: hoTen || user.hoTen
+        };
+
+        // Nếu có truyền mật khẩu mới thì băm lại
+        if (matKhau) {
+            updateData.matKhau = await bcrypt.hash(matKhau, 10);
+        }
+
+        // Chỉ Admin mới được quyền đổi quyền hạn (maLoaiNguoiDung)
+        if (currentUser.maLoaiNguoiDung === 'QuanTri' && maLoaiNguoiDung) {
+            updateData.maLoaiNguoiDung = maLoaiNguoiDung;
+        }
+
+        const updatedUser = await prisma.nguoiDung.update({
+            where: { taiKhoan },
+            data: updateData
+        });
+
+        const { matKhau: _, ...result } = updatedUser;
+        return result;
+    }
+
+    // 9. Xóa người dùng (Chỉ Quản trị viên)
+    async xoaNguoiDung(taiKhoan) {
+        const user = await prisma.nguoiDung.findUnique({ where: { taiKhoan } });
+        if (!user) {
+            const error = new Error('Không tìm thấy tài khoản cần xóa!');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        await prisma.nguoiDung.delete({ where: { taiKhoan } });
+        return 'Xóa người dùng thành công!';
     }
 }
 

@@ -92,6 +92,39 @@ class UserController {
             next(error);
         }
     }
+
+        // Tìm kiếm người dùng
+    async timKiemNguoiDung(req, res, next) {
+        try {
+            const { tuKhoa } = req.query;
+            const result = await userService.layDanhSachNguoiDung(tuKhoa);
+            return sendResponse(res, 200, 'Tìm kiếm người dùng thành công!', result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // Tìm kiếm người dùng phân trang
+    async timKiemNguoiDungPhanTrang(req, res, next) {
+        try {
+            const result = await userService.layDanhSachNguoiDungPhanTrang(req.query);
+            return sendResponse(res, 200, 'Tìm kiếm người dùng phân trang thành công!', result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    // Lấy thông tin người dùng theo tài khoản
+    async layThongTinNguoiDung(req, res, next) {
+        try {
+            const taiKhoan = req.query.taiKhoan || req.body.taiKhoan;
+            const result = await userService.layThongTinNguoiDung(taiKhoan);
+            return sendResponse(res, 200, 'Lấy thông tin người dùng thành công!', result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
 }
 
 module.exports = new UserController();

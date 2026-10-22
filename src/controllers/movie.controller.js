@@ -78,6 +78,30 @@ class MovieController {
             next(error);
         }
     }
+
+        async layDanhSachPhimTheoNgay(req, res, next) {
+        try {
+            const result = await movieService.layDanhSachPhimTheoNgay(req.query);
+            return sendResponse(res, 200, 'Lấy danh sách phim theo ngày thành công!', result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async uploadHinhAnh(req, res, next) {
+        try {
+            if (!req.file) {
+                const error = new Error('Vui lòng chọn file hình ảnh!');
+                error.statusCode = 400;
+                throw error;
+            }
+            const fileUrl = `http://localhost:${process.env.PORT || 3069}/uploads/${req.file.filename}`;
+            return sendResponse(res, 200, 'Upload hình ảnh thành công!', fileUrl);
+        } catch (error) {
+            next(error);
+        }
+    }
+
 }
 
 module.exports = new MovieController();

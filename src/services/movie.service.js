@@ -196,6 +196,49 @@ class MovieService {
 
         return 'Xóa phim thành công!';
     }
+
+        // 8. Lấy danh sách phim theo khoảng ngày khởi chiếu
+    async layDanhSachPhimTheoNgay(query) {
+        const { tuNgay, denNgay, tenPhim, maNhom = 'GP01' } = query;
+        const soTrang = parseInt(query.soTrang) || 1;
+        const soPhanTuTrenTrang = parseInt(query.soPhanTuTrenTrang) || 10;
+
+        const whereCondition = {
+            maNhom: maNhom || 'GP01'
+        };
+
+        if (tenPhim) {
+            whereCondition.tenPhim = { contains: tenPhim };
+        }
+
+        if (tuNgay && denNgay) {
+            whereCondition.ngayKhoiChieu = {
+                gte: new Date(tuNgay),
+                lte: new Date(denNgay)
+            };
+        }
+
+        const skip = (soTrang - 1) * soPhanTuTrenTrang;
+
+        const [totalCount, items] = await Promise.all([
+            prisma.phim.count({ where: whereCondition }),
+            prisma.phim.findMany({
+                where: whereCondition,
+                skip,
+                take: soPhanTuTrenTrang,
+                orderBy: { ngayKhoiChieu: 'desc' }
+            })
+        ]);
+
+        return {
+            currentPage: soTrang,
+            count: items.length,
+            totalPages: Math.ceil(totalCount / soPhanTuTrenTrang),
+            totalCount,
+            items
+        };
+    }
+
 }
 
 module.exports = new MovieService();

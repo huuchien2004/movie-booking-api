@@ -254,6 +254,35 @@ class UserService {
         await prisma.nguoiDung.delete({ where: { taiKhoan } });
         return 'Xóa người dùng thành công!';
     }
+
+        // 10. Lấy thông tin một người dùng cụ thể theo tài khoản (LayThongTinNguoiDung)
+    async layThongTinNguoiDung(taiKhoan) {
+        if (!taiKhoan) {
+            const error = new Error('Vui lòng cung cấp tài khoản!');
+            error.statusCode = 400;
+            throw error;
+        }
+
+        const user = await prisma.nguoiDung.findUnique({
+            where: { taiKhoan },
+            select: {
+                taiKhoan: true,
+                hoTen: true,
+                email: true,
+                soDt: true,
+                maLoaiNguoiDung: true
+            }
+        });
+
+        if (!user) {
+            const error = new Error('Không tìm thấy tài khoản yêu cầu!');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return user;
+    }
+
 }
 
 module.exports = new UserService();

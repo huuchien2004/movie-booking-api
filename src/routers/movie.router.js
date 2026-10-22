@@ -4,29 +4,20 @@ const movieController = require('../controllers/movie.controller');
 const { verifyAuth, requireAdmin } = require('../middlewares/auth.middleware');
 const upload = require('../middlewares/upload.middleware');
 
-// 1. Các route xem thông tin (Công khai cho mọi người)
+// 1. Xem thông tin phim
 movieRouter.get('/LayDanhSachBanner', movieController.layDanhSachBanner);
 movieRouter.get('/LayDanhSachPhim', movieController.layDanhSachPhim);
 movieRouter.get('/LayDanhSachPhimPhanTrang', movieController.layDanhSachPhimPhanTrang);
+movieRouter.get('/LayDanhSachPhimTheoNgay', movieController.layDanhSachPhimTheoNgay);
 movieRouter.get('/LayThongTinPhim', movieController.layThongTinPhim);
 
-// 2. Các route quản trị (Bắt buộc Token Admin + Có Middleware upload file 'hinhAnh')
-movieRouter.post(
-    '/ThemPhimUploadHinh',
-    verifyAuth,
-    requireAdmin,
-    upload.single('hinhAnh'), // Nhận 1 file từ trường 'hinhAnh'
-    movieController.themPhimUploadHinh
-);
+// 2. Upload hình ảnh độc lập (POST /api/QuanLyPhim)
+movieRouter.post('/', upload.single('file'), movieController.uploadHinhAnh);
 
-movieRouter.post(
-    '/CapNhatPhimUpload',
-    verifyAuth,
-    requireAdmin,
-    upload.single('hinhAnh'),
-    movieController.capNhatPhimUpload
-);
-
+// 3. Quản trị phim
+movieRouter.post('/ThemPhimUploadHinh', verifyAuth, requireAdmin, upload.single('hinhAnh'), movieController.themPhimUploadHinh);
+movieRouter.post('/CapNhatPhimUpload', verifyAuth, requireAdmin, upload.single('hinhAnh'), movieController.capNhatPhimUpload);
 movieRouter.delete('/XoaPhim', verifyAuth, requireAdmin, movieController.xoaPhim);
+movieRouter.delete('/XP', verifyAuth, requireAdmin, movieController.xoaPhim); // Alias XP giống Cybersoft
 
 module.exports = movieRouter;

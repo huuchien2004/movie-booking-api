@@ -1,0 +1,458 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "v1",
+    "title": "Movie Booking API"
+  },
+  "host": "localhost:3069",
+  "basePath": "/api",
+  "schemes": ["http"],
+  "paths": {
+    "/QuanLyDatVe/DatVe": {
+      "post": {
+        "tags": ["QuanLyDatVe"],
+        "operationId": "DatVe",
+        "parameters": [
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" },
+          {
+            "name": "DanhSachVe",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "maLichChieu": { "type": "integer", "example": 1001 },
+                "danhSachVe": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "maGhe": { "type": "integer", "example": 5 },
+                      "giaVe": { "type": "integer", "example": 75000 }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyDatVe/LayDanhSachPhongVe": {
+      "get": {
+        "tags": ["QuanLyDatVe"],
+        "operationId": "LayDanhSachPhongVe",
+        "parameters": [
+          { "name": "MaLichChieu", "in": "query", "type": "integer", "default": 1001 }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyDatVe/TaoLichChieu": {
+      "post": {
+        "tags": ["QuanLyDatVe"],
+        "operationId": "TaoLichChieu",
+        "parameters": [
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "maPhim": { "type": "integer", "example": 1 },
+                "ngayChieuGioChieu": { "type": "string", "example": "2026-11-01 20:00:00" },
+                "maRap": { "type": "integer", "example": 101 },
+                "giaVe": { "type": "integer", "example": 75000 }
+              }
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/LayDanhSachLoaiNguoiDung": {
+      "get": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "LayDanhSachLoaiNguoiDung",
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/DangNhap": {
+      "post": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "DangNhap",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "taiKhoan": { "type": "string", "example": "admin" },
+                "matKhau": { "type": "string", "example": "123456" }
+              }
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/DangKy": {
+      "post": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "DangKy",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "taiKhoan": { "type": "string", "example": "user_moi" },
+                "matKhau": { "type": "string", "example": "123456" },
+                "email": { "type": "string", "example": "user_moi@gmail.com" },
+                "soDt": { "type": "string", "example": "0912345678" },
+                "hoTen": { "type": "string", "example": "Nguyen Van Moi" }
+              }
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/LayDanhSachNguoiDung": {
+      "get": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "LayDanhSachNguoiDung",
+        "parameters": [
+          { "name": "MaNhom", "in": "query", "type": "string", "default": "GP01" },
+          { "name": "tuKhoa", "in": "query", "type": "string", "default": "" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/LayDanhSachNguoiDungPhanTrang": {
+      "get": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "LayDanhSachNguoiDungPhanTrang",
+        "parameters": [
+          { "name": "MaNhom", "in": "query", "type": "string", "default": "GP01" },
+          { "name": "tuKhoa", "in": "query", "type": "string", "default": "" },
+          { "name": "soTrang", "in": "query", "type": "integer", "default": 1 },
+          { "name": "soPhanTuTrenTrang", "in": "query", "type": "integer", "default": 20 }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/TimKiemNguoiDung": {
+      "get": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "TimKiemNguoiDung",
+        "parameters": [
+          { "name": "MaNhom", "in": "query", "type": "string", "default": "GP01" },
+          { "name": "tuKhoa", "in": "query", "type": "string", "default": "" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/TimKiemNguoiDungPhanTrang": {
+      "get": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "TimKiemNguoiDungPhanTrang",
+        "parameters": [
+          { "name": "MaNhom", "in": "query", "type": "string", "default": "GP01" },
+          { "name": "tuKhoa", "in": "query", "type": "string", "default": "" },
+          { "name": "soTrang", "in": "query", "type": "integer", "default": 1 },
+          { "name": "soPhanTuTrenTrang", "in": "query", "type": "integer", "default": 20 }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/ThongTinTaiKhoan": {
+      "post": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "ThongTinTaiKhoan",
+        "parameters": [
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/LayThongTinNguoiDung": {
+      "post": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "LayThongTinNguoiDung",
+        "parameters": [
+          { "name": "taiKhoan", "in": "query", "type": "string", "required": true, "default": "admin" },
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/ThemNguoiDung": {
+      "post": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "ThemNguoiDung",
+        "parameters": [
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "taiKhoan": { "type": "string", "example": "user_moi" },
+                "matKhau": { "type": "string", "example": "123456" },
+                "email": { "type": "string", "example": "user_moi@gmail.com" },
+                "soDt": { "type": "string", "example": "0912345678" },
+                "maLoaiNguoiDung": { "type": "string", "example": "KhachHang" },
+                "hoTen": { "type": "string", "example": "Nguyen Van Moi" }
+              }
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/CapNhatThongTinNguoiDung": {
+      "put": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "CapNhatThongTinNguoiDung",
+        "parameters": [
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "taiKhoan": { "type": "string", "example": "user_moi" },
+                "matKhau": { "type": "string", "example": "123456" },
+                "email": { "type": "string", "example": "user_moi@gmail.com" },
+                "soDt": { "type": "string", "example": "0912345678" },
+                "maLoaiNguoiDung": { "type": "string", "example": "KhachHang" },
+                "hoTen": { "type": "string", "example": "Nguyen Van Moi Update" }
+              }
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      },
+      "post": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "CapNhat",
+        "parameters": [
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "taiKhoan": { "type": "string", "example": "user_moi" },
+                "matKhau": { "type": "string", "example": "123456" },
+                "email": { "type": "string", "example": "user_moi@gmail.com" },
+                "soDt": { "type": "string", "example": "0912345678" },
+                "maLoaiNguoiDung": { "type": "string", "example": "KhachHang" },
+                "hoTen": { "type": "string", "example": "Nguyen Van Moi Update" }
+              }
+            }
+          }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyNguoiDung/XoaNguoiDung": {
+      "delete": {
+        "tags": ["QuanLyNguoiDung"],
+        "operationId": "XoaNguoiDung",
+        "parameters": [
+          { "name": "TaiKhoan", "in": "query", "type": "string", "required": true },
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyPhim/LayDanhSachBanner": {
+      "get": {
+        "tags": ["QuanLyPhim"],
+        "operationId": "LayDanhSachBanner",
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyPhim/LayDanhSachPhim": {
+      "get": {
+        "tags": ["QuanLyPhim"],
+        "operationId": "LayDanhSachPhim",
+        "parameters": [
+          { "name": "maNhom", "in": "query", "type": "string", "default": "GP01" },
+          { "name": "tenPhim", "in": "query", "type": "string", "default": "" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyPhim/LayDanhSachPhimPhanTrang": {
+      "get": {
+        "tags": ["QuanLyPhim"],
+        "operationId": "LayDanhSachPhimPhanTrang",
+        "parameters": [
+          { "name": "maNhom", "in": "query", "type": "string", "default": "GP01" },
+          { "name": "tenPhim", "in": "query", "type": "string", "default": "" },
+          { "name": "soTrang", "in": "query", "type": "integer", "default": 1 },
+          { "name": "soPhanTuTrenTrang", "in": "query", "type": "integer", "default": 10 }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyPhim/LayDanhSachPhimTheoNgay": {
+      "get": {
+        "tags": ["QuanLyPhim"],
+        "operationId": "LayDanhSachPhimTheoNgay",
+        "parameters": [
+          { "name": "maNhom", "in": "query", "type": "string", "default": "GP01" },
+          { "name": "tenPhim", "in": "query", "type": "string", "default": "" },
+          { "name": "soTrang", "in": "query", "type": "integer", "default": 1 },
+          { "name": "soPhanTuTrenTrang", "in": "query", "type": "integer", "default": 10 },
+          { "name": "tuNgay", "in": "query", "type": "string", "default": "2024-01-01" },
+          { "name": "denNgay", "in": "query", "type": "string", "default": "2026-12-31" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyPhim/ThemPhimUploadHinh": {
+      "post": {
+        "tags": ["QuanLyPhim"],
+        "operationId": "ThemPhimUploadHinh",
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" },
+          { "name": "tenPhim", "in": "formData", "required": true, "type": "string" },
+          { "name": "trailer", "in": "formData", "type": "string" },
+          { "name": "moTa", "in": "formData", "type": "string" },
+          { "name": "ngayKhoiChieu", "in": "formData", "type": "string" },
+          { "name": "danhGia", "in": "formData", "type": "integer", "default": 10 },
+          { "name": "hot", "in": "formData", "type": "boolean", "default": true },
+          { "name": "dangChieu", "in": "formData", "type": "boolean", "default": true },
+          { "name": "sapChieu", "in": "formData", "type": "boolean", "default": false },
+          { "name": "maNhom", "in": "formData", "type": "string", "default": "GP01" },
+          { "name": "hinhAnh", "in": "formData", "type": "file", "description": "File ảnh poster" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyPhim/CapNhatPhimUpload": {
+      "post": {
+        "tags": ["QuanLyPhim"],
+        "operationId": "CapNhatPhimUpload",
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" },
+          { "name": "maPhim", "in": "formData", "required": true, "type": "integer" },
+          { "name": "tenPhim", "in": "formData", "type": "string" },
+          { "name": "trailer", "in": "formData", "type": "string" },
+          { "name": "moTa", "in": "formData", "type": "string" },
+          { "name": "ngayKhoiChieu", "in": "formData", "type": "string" },
+          { "name": "danhGia", "in": "formData", "type": "integer" },
+          { "name": "hot", "in": "formData", "type": "boolean" },
+          { "name": "dangChieu", "in": "formData", "type": "boolean" },
+          { "name": "sapChieu", "in": "formData", "type": "boolean" },
+          { "name": "maNhom", "in": "formData", "type": "string" },
+          { "name": "hinhAnh", "in": "formData", "type": "file" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyPhim": {
+      "post": {
+        "tags": ["QuanLyPhim"],
+        "operationId": "UploadHinhAnh",
+        "consumes": ["multipart/form-data"],
+        "parameters": [
+          { "name": "file", "in": "formData", "required": true, "type": "file" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyPhim/XP": {
+      "delete": {
+        "tags": ["QuanLyPhim"],
+        "operationId": "XP",
+        "parameters": [
+          { "name": "MaPhim", "in": "query", "type": "integer", "required": true },
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyPhim/XoaPhim": {
+      "delete": {
+        "tags": ["QuanLyPhim"],
+        "operationId": "XoaPhim",
+        "parameters": [
+          { "name": "MaPhim", "in": "query", "type": "integer", "required": true },
+          { "name": "Authorization", "in": "header", "description": "Nhập token bearer", "required": true, "type": "string" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyPhim/LayThongTinPhim": {
+      "get": {
+        "tags": ["QuanLyPhim"],
+        "operationId": "LayThongTinPhim",
+        "parameters": [
+          { "name": "MaPhim", "in": "query", "type": "integer", "required": true, "default": 1 }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyRap/LayThongTinHeThongRap": {
+      "get": {
+        "tags": ["QuanLyRap"],
+        "operationId": "LayThongTinHeThongRap",
+        "parameters": [
+          { "name": "maHeThongRap", "in": "query", "type": "string", "default": "" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyRap/LayThongTinCumRapTheoHeThong": {
+      "get": {
+        "tags": ["QuanLyRap"],
+        "operationId": "LayThongTinCumRapTheoHeThong",
+        "parameters": [
+          { "name": "maHeThongRap", "in": "query", "type": "string", "required": true, "default": "BHDStar" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyRap/LayThongTinLichChieuHeThongRap": {
+      "get": {
+        "tags": ["QuanLyRap"],
+        "operationId": "LayThongTinLichChieuHeThongRap",
+        "parameters": [
+          { "name": "maHeThongRap", "in": "query", "type": "string", "default": "" },
+          { "name": "maNhom", "in": "query", "type": "string", "default": "GP01" }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    },
+    "/QuanLyRap/LayThongTinLichChieuPhim": {
+      "get": {
+        "tags": ["QuanLyRap"],
+        "operationId": "LayThongTinLichChieuPhim",
+        "parameters": [
+          { "name": "MaPhim", "in": "query", "type": "integer", "required": true, "default": 1 }
+        ],
+        "responses": { "200": { "description": "Success" } }
+      }
+    }
+  }
+}
